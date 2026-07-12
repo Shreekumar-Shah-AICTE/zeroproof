@@ -11,16 +11,19 @@ Generalized accuracy is measured on **generated paraphrase/harder/adversarial va
 | 2026-07-12 18:15:05 | v2-det-improvements | 3 | absent | 98.3% | n/a% | 0 | clean |
 | 2026-07-12 18:15:15 | diag2 | 3 | absent | 98.3% | n/a% | 0 | clean |
 | 2026-07-12 18:17:01 | v3-det-100 | 5 | absent | 100.0% | n/a% | 0 | clean |
+| 2026-07-12 18:27:02 | v4-with-model-1.5B | 1 | loaded | 100.0% | 95.3% | 0 | clean |
+| 2026-07-12 18:31:19 | v5-det-recheck | 5 | absent | 100.0% | n/a% | 0 | clean |
+| 2026-07-12 18:34:28 | v6-model-latencyfix | 1 | loaded | 100.0% | 95.3% | 0 | clean |
 
 ## Latest per-category (generalized) accuracy
 
 | Category | Accuracy | Model-dependent |
 | :-- | :-- | :-- |
-| mathematical_reasoning | 100.0% (80/80) | False |
-| code_generation | 0.0% (0/80) | True |
-| code_debugging | 0.0% (0/80) | True |
-| logical_reasoning | 100.0% (80/80) | False |
-| named_entity_recognition | 100.0% (80/80) | False |
-| sentiment_analysis | 100.0% (80/80) | False |
-| text_summarization | 100.0% (80/80) | False |
-| factual_knowledge | 0.0% (0/80) | True |
+| mathematical_reasoning | 100.0% (8/8) | False |
+| code_generation | 75.0% (6/8) | True |
+| code_debugging | 100.0% (8/8) | True |
+| logical_reasoning | 100.0% (8/8) | False |
+| named_entity_recognition | 100.0% (8/8) | False |
+| sentiment_analysis | 100.0% (8/8) | False |
+| text_summarization | 100.0% (8/8) | False |
+| factual_knowledge | 87.5% (7/8) | True |

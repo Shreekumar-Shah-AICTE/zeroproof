@@ -64,14 +64,18 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
             proof="no knowledge source available (local model absent)",
         )
 
-    # A deterministic primary answer, plus low-temperature corroboration samples.
-    primary = ctx.llm.chat(_FACT_SYSTEM, prompt, max_tokens=ctx.config.llm_max_tokens, temperature=0.0)
+    # A deterministic primary answer, plus (budget permitting) one corroboration
+    # sample for medoid selection. Output is capped so a single generation stays
+    # well under the per-task latency cap on 2 vCPU.
+    cap = min(ctx.config.llm_max_tokens, 224)
+    primary = ctx.llm.chat(_FACT_SYSTEM, prompt, max_tokens=cap, temperature=0.0)
     answers: List[str] = []
     if primary and primary.text:
         answers.append(primary.text.strip())
-    extra = ctx.llm.sample(_FACT_SYSTEM, prompt, n=max(2, ctx.config.self_consistency_samples - 1),
-                           max_tokens=ctx.config.llm_max_tokens, temperature=0.4)
-    answers.extend(a.strip() for a in extra if a.strip())
+    # Only spend a second sample if there is comfortable time left.
+    if ctx.seconds_left() > 12.0:
+        extra = ctx.llm.sample(_FACT_SYSTEM, prompt, n=1, max_tokens=cap, temperature=0.4)
+        answers.extend(a.strip() for a in extra if a.strip())
 
     if not answers:
         return Result(answer="", category="factual_knowledge", method="none", confidence=0.0,

@@ -115,13 +115,16 @@ def _verify_code(code: str, func: Optional[str], prompt: str, timeout: float) ->
 
 def _generate_and_repair(system: str, user_builder, ctx, prompt: str) -> Tuple[Optional[str], bool, str]:  # noqa: ANN001
     timeout = min(ctx.config.code_exec_timeout, 6.0)
+    cap = min(ctx.config.llm_max_tokens + 128, 420)  # code needs a little more room
     last_code = None
     last_detail = ""
     feedback = ""
-    for attempt in range(3):
+    for attempt in range(2):  # first attempt + one repair; bounded for latency
         if ctx.llm is None or not ctx.llm.available:
             break
-        reply = ctx.llm.chat(system, user_builder(feedback), max_tokens=520, temperature=0.2 if attempt == 0 else 0.5)
+        if attempt > 0 and ctx.seconds_left() < 12.0:
+            break  # not enough budget for another generation
+        reply = ctx.llm.chat(system, user_builder(feedback), max_tokens=cap, temperature=0.1 if attempt == 0 else 0.4)
         if reply is None:
             break
         code = _extract_code(reply.text)

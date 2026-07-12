@@ -55,8 +55,8 @@ class Config:
     n_threads: int = field(default_factory=lambda: _env_int("ZP_N_THREADS", 2))
     n_ctx: int = field(default_factory=lambda: _env_int("ZP_N_CTX", 4096))
     n_batch: int = field(default_factory=lambda: _env_int("ZP_N_BATCH", 256))
-    llm_max_tokens: int = field(default_factory=lambda: _env_int("ZP_LLM_MAX_TOKENS", 512))
-    self_consistency_samples: int = field(default_factory=lambda: _env_int("ZP_SC_SAMPLES", 3))
+    llm_max_tokens: int = field(default_factory=lambda: _env_int("ZP_LLM_MAX_TOKENS", 256))
+    self_consistency_samples: int = field(default_factory=lambda: _env_int("ZP_SC_SAMPLES", 2))
     seed: int = field(default_factory=lambda: _env_int("ZP_SEED", 1234))
 
     # ---- Fireworks valve (default HARD-OFF; see fireworks_valve.py) ----

@@ -72,6 +72,7 @@ def run(config: Config = None) -> int:  # noqa: ANN001
             break
         # Per-task soft budget: never let one task consume the whole run.
         budget = min(config.per_task_seconds, max(2.0, (deadline.remaining() - 8.0) / max(1, len(tasks) - i)))
+        ctx.task_deadline = time.monotonic() + budget
         t0 = time.monotonic()
         try:
             result = route(task, ctx)

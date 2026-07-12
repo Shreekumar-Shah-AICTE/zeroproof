@@ -180,19 +180,39 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
     prompt = prompt.strip()
     timeout = min(ctx.config.code_exec_timeout, 6.0)
 
-    # ---- 1. Clean-expression fast path (provably correct, no model) ----
-    clean = _clean_expression(prompt)
-
-    # ---- 1b. Deterministic arithmetic-chain (high-precision, refuses if unsure) ----
-    chain = solve_chain(prompt)  # (value, worked_steps) or None
-
-    # ---- 1c. Proportion / unit-cost (ratio) problems ----
+    # ======================================================================
+    # DETERMINISTIC-FIRST. These paths are instant (no model) and proof-carrying,
+    # so we try them before the slow program-of-thought. This keeps math well
+    # under the 30s/task cap and at 0 tokens for the vast majority of problems.
+    # ======================================================================
     ratio = _ratio_solve(prompt)
+    if ratio is not None:
+        val, work = ratio
+        return Result(answer=f"{work}\nAnswer: {_fmt_number(val)}", category="mathematical_reasoning",
+                      method="ratio-solver", confidence=0.92, verified=True,
+                      proof="deterministic proportion/unit-cost computation")
 
-    # ---- 2. Program-of-thought (primary for word problems) ----
+    chain = solve_chain(prompt)
+    if chain is not None:
+        val, work = chain
+        return Result(answer=f"{work}\nAnswer: {_fmt_number(val)}", category="mathematical_reasoning",
+                      method="arith-chain", confidence=0.92, verified=True,
+                      proof="deterministic operation-chain (all operands consumed)")
+
+    clean = _clean_expression(prompt)
+    if clean is not None:
+        val, work = clean
+        return Result(answer=f"{work}\nAnswer: {_fmt_number(val)}", category="mathematical_reasoning",
+                      method="symbolic-eval", confidence=0.95, verified=True,
+                      proof="direct symbolic evaluation")
+
+    # ======================================================================
+    # Program-of-thought fallback (only when no deterministic path matched).
+    # The executed value is the answer; two agreeing samples => verified.
+    # ======================================================================
     pot_values: List[Tuple[float, str]] = []
-    if ctx.llm is not None and ctx.llm.available:
-        samples = ctx.llm.sample(_POT_SYSTEM, prompt, n=max(2, ctx.config.self_consistency_samples), max_tokens=380, temperature=0.4)
+    if ctx.llm is not None and ctx.llm.available and ctx.seconds_left() > 12.0:
+        samples = ctx.llm.sample(_POT_SYSTEM, prompt, n=2, max_tokens=300, temperature=0.4)
         for text in samples:
             code = _extract_code(text)
             if not code:
@@ -201,16 +221,8 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
             if got is not None:
                 pot_values.append(got)
 
-    def _cross(val: float) -> bool:
-        return (
-            (clean and abs(clean[0] - val) < 1e-6)
-            or (chain and abs(chain[0] - val) < 1e-6)
-            or (ratio and abs(ratio[0] - val) < 1e-4)
-        )
-
     if pot_values:
-        # Majority vote over executed results.
-        tally = {}
+        tally: dict = {}
         for val, steps in pot_values:
             key = round(val, 6)
             tally.setdefault(key, {"count": 0, "steps": steps})
@@ -218,63 +230,14 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
         best_key = max(tally, key=lambda k: tally[k]["count"])
         agree = tally[best_key]["count"]
         steps = tally[best_key]["steps"]
-        crossed = _cross(best_key)
-        verified = agree >= 2 or crossed
+        verified = agree >= 2
         answer_text = (steps + "\n" if steps else "") + f"Answer: {_fmt_number(best_key)}"
-        confidence = 0.98 if crossed else (0.9 if agree >= 2 else 0.7)
-        proof = f"program-of-thought executed; {agree}/{len(pot_values)} samples agree" + (
-            "; matches deterministic computation" if crossed else ""
-        )
         return Result(
-            answer=answer_text.strip(),
-            category="mathematical_reasoning",
-            method="pot+execute",
-            confidence=confidence,
-            verified=verified,
-            proof=proof,
+            answer=answer_text.strip(), category="mathematical_reasoning", method="pot+execute",
+            confidence=0.9 if verified else 0.7, verified=verified,
+            proof=f"program-of-thought executed; {agree}/{len(pot_values)} samples agree",
         )
 
-    # No usable PoT (e.g. model absent or PoT failed) -> deterministic paths.
-    if ratio is not None:
-        val, work = ratio
-        return Result(
-            answer=f"{work}\nAnswer: {_fmt_number(val)}",
-            category="mathematical_reasoning",
-            method="ratio-solver",
-            confidence=0.9,
-            verified=True,
-            proof="deterministic proportion/unit-cost computation",
-        )
-
-    if chain is not None:
-        val, work = chain
-        return Result(
-            answer=f"{work}\nAnswer: {_fmt_number(val)}",
-            category="mathematical_reasoning",
-            method="arith-chain",
-            confidence=0.9,
-            verified=True,
-            proof="deterministic operation-chain (all operands consumed)",
-        )
-
-    if clean is not None:
-        val, work = clean
-        return Result(
-            answer=f"{work}\nAnswer: {_fmt_number(val)}",
-            category="mathematical_reasoning",
-            method="symbolic-eval",
-            confidence=0.95,
-            verified=True,
-            proof="direct symbolic evaluation",
-        )
-
-    # ---- 3. Nothing trustworthy: honest low-confidence best effort ----
-    # (Only reached when the local model is unavailable AND no clean expression.)
-    return Result(
-        answer="",
-        category="mathematical_reasoning",
-        method="none",
-        confidence=0.0,
-        verified=False,
-        proof="no executable derivation available",
-    )
+    # Nothing trustworthy (model absent AND no deterministic match).
+    return Result(answer="", category="mathematical_reasoning", method="none", confidence=0.0,
+                  verified=False, proof="no executable derivation available")

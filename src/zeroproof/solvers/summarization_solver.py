@@ -176,8 +176,8 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
     draft: Optional[str] = None
     method = "extractive"
 
-    if ctx.llm is not None and ctx.llm.available:
-        reply = ctx.llm.chat(_SUM_SYSTEM, prompt, max_tokens=320, temperature=0.2)
+    if ctx.llm is not None and ctx.llm.available and ctx.seconds_left() > 10.0:
+        reply = ctx.llm.chat(_SUM_SYSTEM, prompt, max_tokens=min(ctx.config.llm_max_tokens, 224), temperature=0.2)
         if reply and reply.text:
             draft = reply.text.strip()
             method = "llm+enforced"

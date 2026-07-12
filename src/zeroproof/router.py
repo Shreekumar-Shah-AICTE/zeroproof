@@ -43,10 +43,18 @@ class Context:
     config: Config
     llm: Optional[LocalLLM]
     valve: FireworksValve
+    task_deadline: Optional[float] = None   # monotonic time; set per task by main
 
     @property
     def fireworks_tokens(self) -> int:
         return self.valve.fireworks_tokens
+
+    def seconds_left(self) -> float:
+        """Seconds remaining in the current task budget (inf if unset)."""
+        if self.task_deadline is None:
+            return float("inf")
+        import time as _t
+        return self.task_deadline - _t.monotonic()
 
 
 def build_context(config: Optional[Config] = None) -> Context:
@@ -80,9 +88,9 @@ _DISPATCH: Dict[str, Callable[[str, Context], Result]] = {
 
 
 def _general_answer(prompt: str, ctx: Context) -> Optional[str]:
-    if ctx.llm is None or not ctx.llm.available:
+    if ctx.llm is None or not ctx.llm.available or ctx.seconds_left() < 8.0:
         return None
-    reply = ctx.llm.chat(_GENERAL_SYSTEM, prompt, max_tokens=ctx.config.llm_max_tokens, temperature=0.0)
+    reply = ctx.llm.chat(_GENERAL_SYSTEM, prompt, max_tokens=min(ctx.config.llm_max_tokens, 224), temperature=0.0)
     if reply and reply.text.strip():
         return reply.text.strip()
     return None
