@@ -1,0 +1,11 @@
+# ZeroProof runtime dependencies (CPU-only, linux/amd64).
+# Deterministic solver stack — all permissively licensed (MIT/BSD/Apache).
+spacy==3.8.14
+sympy==1.14.0
+python-constraint2==2.6.0
+dateparser==1.4.1
+numpy==2.4.6
+
+# Local inference runtime (GGUF via llama.cpp). Installed from the prebuilt CPU
+# wheel index in the Dockerfile so no compiler toolchain is needed at build time.
+llama-cpp-python==0.3.16

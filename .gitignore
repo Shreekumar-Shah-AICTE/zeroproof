@@ -1,0 +1,23 @@
+# Model weights are baked at build time, never committed (too large).
+models/
+*.gguf
+*.bin
+*.safetensors
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Proving Ground run artifacts (the scoreboard history IS committed; see below)
+proving_ground/runs/
+proving_ground/**/__pycache__/
+
+# Local scratch / grader I/O
+/input/
+/output/
+*.log
+.DS_Store

@@ -1,0 +1,44 @@
+# ZeroProof reference configuration.
+# The agent reads configuration from environment variables (see src/zeroproof/config.py
+# and .env.example). This file documents the canonical values and rationale; it is
+# not required at runtime but is handy as a single source of truth for operators.
+
+io:
+  input_path: /input/tasks.json
+  output_path: /output/results.json
+
+timing_seconds:
+  watchdog: 570        # 9m30s — hard internal stop before the 10-min grader limit
+  per_task: 28         # < 30s per-task grader cap
+  remote_timeout: 25   # only used if the Fireworks valve is enabled
+  code_exec_timeout: 5 # sandboxed code/PoT execution budget
+
+model:
+  path: /models/model.gguf
+  name: Qwen2.5-1.5B-Instruct (Q4_K_M GGUF)   # Apache-2.0, redistributable
+  n_threads: 2
+  n_ctx: 4096
+  self_consistency_samples: 3
+  seed: 1234
+  bake_off_challenger: Phi-3.5-mini-instruct (MIT) or Qwen2.5-3B (note: Qwen research license)
+
+fireworks_valve:
+  enabled: false                       # DEFAULT OFF — the zero-token win path
+  allowed_categories: [factual_knowledge]
+  reasoning_tokens: disabled
+  note: >
+    Present in code but hard-disabled. A single explicit switch
+    (ZP_FIREWORKS_ENABLED=1) turns it on as an audit-safe, factual-only insurance
+    lever. Never enabled at evaluation by default.
+
+categories:
+  provable_deterministic:
+    - mathematical_reasoning     # symbolic eval + arithmetic-chain + PoT (executed)
+    - code_generation            # generate -> execute against tests -> repair
+    - code_debugging             # fix -> execute -> verify
+    - logical_reasoning          # constraint solver (proof) + LLM self-consistency
+    - named_entity_recognition   # spaCy + gazetteer/rule correction
+  linguistic_governed:
+    - factual_knowledge          # LLM + self-consistency medoid  (top risk)
+    - sentiment_analysis         # LLM + contrastive-cue governance
+    - text_summarization         # LLM draft + deterministic format enforcement

@@ -1,0 +1,4 @@
+# OPTIONAL — only needed if the operator explicitly enables the default-OFF
+# Fireworks insurance valve (ZP_FIREWORKS_ENABLED=1). Not installed in the
+# default image, keeping it slim and the zero-token win path pure.
+openai==1.54.4

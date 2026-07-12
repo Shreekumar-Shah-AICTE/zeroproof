@@ -1,0 +1,35 @@
+ZeroProof — third-party components and licenses
+================================================
+
+ZeroProof's own source code is released under the MIT License (see LICENSE).
+All bundled/relied-upon components are permissively licensed and redistributable,
+making the public Docker image license-compliant.
+
+Bundled local model
+--------------------
+* Qwen2.5-1.5B-Instruct (GGUF, Q4_K_M)
+  - License: Apache License 2.0 (redistributable)
+  - Source: https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF
+  - Copyright (c) Alibaba Cloud / Qwen Team.
+  - Bundled into the image at build time; not modified.
+  NOTE: The default model is deliberately an Apache-2.0 size (1.5B). The optional
+  ~3B bake-off challenger should use a license-clean model such as
+  Phi-3.5-mini-instruct (MIT). Qwen2.5-3B is under the Qwen Research License and
+  is NOT used by default.
+
+Python libraries
+----------------
+* spaCy (MIT) + en_core_web_sm model (MIT) — https://spacy.io
+* SymPy (BSD-3-Clause) — https://www.sympy.org
+* python-constraint2 (BSD-2-Clause) — constraint satisfaction solver
+* dateparser (BSD-3-Clause)
+* NumPy (BSD-3-Clause)
+* llama-cpp-python (MIT) — Python bindings for llama.cpp (MIT)
+
+Optional (only if the Fireworks valve is explicitly enabled)
+------------------------------------------------------------
+* openai (Apache-2.0) — used solely to route through FIREWORKS_BASE_URL when the
+  default-OFF valve is turned on. Not installed in the default image.
+
+No third-party code or data is embedded as hardcoded answers. Task content is
+treated strictly as untrusted data.
