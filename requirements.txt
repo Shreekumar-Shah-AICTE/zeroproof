@@ -1,6 +1,7 @@
 # ZeroProof runtime dependencies (CPU-only, linux/amd64).
 # Deterministic solver stack — all permissively licensed (MIT/BSD/Apache).
 spacy==3.8.14
+click==8.4.2          # spaCy's CLI imports click directly; not always pulled transitively
 sympy==1.14.0
 python-constraint2==2.6.0
 dateparser==1.4.1
