@@ -58,6 +58,61 @@ def _safe_eval_expr(expr: str) -> Optional[float]:
         return None
 
 
+# --------------------------------------------------------------------------
+# 1c. Proportion / unit-cost (ratio) problems
+# --------------------------------------------------------------------------
+_AMOUNT_UNIT = re.compile(
+    r"(\d+\s*/\s*\d+|\d+(?:\.\d+)?)\s*(cups?|grams?|kg|kilograms?|liters?|litres?|ml|"
+    r"tablespoons?|teaspoons?|ounces?|oz|pounds?|lbs?|tbsp|tsp)\b",
+    re.IGNORECASE,
+)
+_FOR_COUNT = re.compile(r"for\s+(\d+(?:\.\d+)?)\s+([a-zA-Z]+)", re.IGNORECASE)
+_COST = re.compile(r"\$?\s*(\d+(?:\.\d+)?)\s*(?:per|/|a)\s*(cups?|grams?|kg|liters?|litres?|ml|ounces?|oz|pounds?|lbs?)", re.IGNORECASE)
+
+
+def _parse_amount(tok: str) -> Optional[float]:
+    tok = tok.strip()
+    if "/" in tok:
+        a, b = tok.split("/")
+        try:
+            return float(a) / float(b)
+        except (ValueError, ZeroDivisionError):
+            return None
+    try:
+        return float(tok)
+    except ValueError:
+        return None
+
+
+def _ratio_solve(prompt: str) -> Optional[Tuple[float, str]]:
+    am = _AMOUNT_UNIT.search(prompt)
+    counts = _FOR_COUNT.findall(prompt)
+    if not am or len(counts) < 1:
+        return None
+    amount = _parse_amount(am.group(1))
+    unit = am.group(2).lower().rstrip("s")
+    if amount is None:
+        return None
+    # base = the count nearest the amount ("for 12 cookies"); target = a
+    # different count (the asked quantity).
+    nums = [float(c[0]) for c in counts]
+    base = nums[0]
+    target = next((n for n in nums if n != base), None)
+    if target is None or base == 0:
+        return None
+    scaled = amount * target / base
+    lines = [f"{am.group(1)} {unit} per {int(base) if base==int(base) else base} -> "
+             f"{_fmt_number(scaled)} {unit} for {int(target) if target==int(target) else target}"]
+    result = scaled
+    cost_m = _COST.search(prompt)
+    if cost_m:
+        cost = float(cost_m.group(1))
+        total = scaled * cost
+        lines.append(f"cost: {_fmt_number(scaled)} x ${cost:.2f} = ${_fmt_number(total)}")
+        result = total
+    return result, "\n".join(lines)
+
+
 def _clean_expression(prompt: str) -> Optional[Tuple[float, str]]:
     m = _PERCENT_OF.search(prompt)
     if m:
@@ -131,6 +186,9 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
     # ---- 1b. Deterministic arithmetic-chain (high-precision, refuses if unsure) ----
     chain = solve_chain(prompt)  # (value, worked_steps) or None
 
+    # ---- 1c. Proportion / unit-cost (ratio) problems ----
+    ratio = _ratio_solve(prompt)
+
     # ---- 2. Program-of-thought (primary for word problems) ----
     pot_values: List[Tuple[float, str]] = []
     if ctx.llm is not None and ctx.llm.available:
@@ -144,7 +202,11 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
                 pot_values.append(got)
 
     def _cross(val: float) -> bool:
-        return (clean and abs(clean[0] - val) < 1e-6) or (chain and abs(chain[0] - val) < 1e-6)
+        return (
+            (clean and abs(clean[0] - val) < 1e-6)
+            or (chain and abs(chain[0] - val) < 1e-6)
+            or (ratio and abs(ratio[0] - val) < 1e-4)
+        )
 
     if pot_values:
         # Majority vote over executed results.
@@ -173,6 +235,17 @@ def solve(prompt: str, ctx) -> Result:  # noqa: ANN001
         )
 
     # No usable PoT (e.g. model absent or PoT failed) -> deterministic paths.
+    if ratio is not None:
+        val, work = ratio
+        return Result(
+            answer=f"{work}\nAnswer: {_fmt_number(val)}",
+            category="mathematical_reasoning",
+            method="ratio-solver",
+            confidence=0.9,
+            verified=True,
+            proof="deterministic proportion/unit-cost computation",
+        )
+
     if chain is not None:
         val, work = chain
         return Result(

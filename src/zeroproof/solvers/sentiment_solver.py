@@ -35,6 +35,10 @@ _NEG = {
     "wrong", "fails", "failed", "crash", "crashed", "expensive", "difficult",
 }
 _CONTRAST = re.compile(r"\b(but|however|although|though|yet|nevertheless|still|despite|even though|while)\b", re.IGNORECASE)
+# Markers that flip/neutralize a nearby negative word ("resolved my issue",
+# "no problems", "fixed the bug") or negate a positive one ("not great").
+_RESOLVE = re.compile(r"\b(resolved|resolve|fixed|fix|solved|solve|addressed|no|without|zero|never|free of)\b", re.IGNORECASE)
+_NEGATE = re.compile(r"\b(not|isn't|wasn't|aren't|no|never|hardly|barely)\b", re.IGNORECASE)
 
 _SENTIMENT_SYSTEM = (
     "You classify sentiment as exactly one of: Positive, Negative, Neutral, or Mixed. "
@@ -53,10 +57,27 @@ def _clauses(text: str) -> Tuple[str, str]:
 
 
 def _cues(text: str) -> Tuple[List[str], List[str]]:
+    """Context-aware lexicon scan.
+
+    A negative word preceded (within ~3 tokens) by a resolution marker
+    ("resolved my issue", "no problems") is not counted as negative; a positive
+    word preceded by a negation ("not great") is not counted as positive.
+    """
     low = text.lower()
-    pos = [w for w in _POS if re.search(r"\b" + re.escape(w) + r"\b", low)]
-    neg = [w for w in _NEG if re.search(r"\b" + re.escape(w) + r"\b", low)]
-    return pos, neg
+    tokens = re.findall(r"[a-z']+", low)
+    pos: List[str] = []
+    neg: List[str] = []
+    for i, tok in enumerate(tokens):
+        window = " ".join(tokens[max(0, i - 3):i])
+        if tok in _NEG:
+            if _RESOLVE.search(window):
+                continue
+            neg.append(tok)
+        elif tok in _POS:
+            if _NEGATE.search(window):
+                continue
+            pos.append(tok)
+    return list(dict.fromkeys(pos)), list(dict.fromkeys(neg))
 
 
 def _target_text(prompt: str) -> str:

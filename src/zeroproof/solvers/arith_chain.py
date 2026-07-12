@@ -42,23 +42,27 @@ class Step:
 
 _START = re.compile(
     r"(?:starts?\s+with|begins?\s+with|has|had|have|contains?|there\s+(?:are|were)|"
-    r"initial(?:ly)?|start(?:ing)?\s+(?:with|at)|of)\s+(?:about\s+)?([\d,]+(?:\.\d+)?)",
+    r"initial(?:ly)?|start(?:ing)?\s+(?:with|at)|inventory[^.\d]*\bis|is)\s+(?:about\s+)?([\d,]+(?:\.\d+)?)",
     re.IGNORECASE,
 )
+# Verb sets include base/-s/-ing/-ed/gerund forms so "sells", "selling", "sold"
+# all match (and likewise add/adding/added, remove/removing/removed, ...).
 _ADD = re.compile(
-    r"\b(?:add|adds|added|restock|restocks|restocked|gain|gains|gained|buy|buys|bought|"
-    r"receive|receives|received|deposit|deposits|deposited|earn|earns|earned|produce|"
-    r"produces|produced|make|makes|made|plus)\b[^.\d]*([\d,]+(?:\.\d+)?)(\s*%)?",
+    r"\b(?:add(?:s|ing|ed)?|restock(?:s|ing|ed)?|gain(?:s|ing|ed)?|buy(?:s|ing)?|bought|"
+    r"receiv(?:e|es|ing|ed)|deposit(?:s|ing|ed)?|earn(?:s|ing|ed)?|produc(?:e|es|ing|ed)|"
+    r"mak(?:e|es|ing)|made|acquir(?:e|es|ing|ed)|get(?:s|ting)?|got|gain(?:s|ing|ed)?|plus)"
+    r"\b[^.\d]*?([\d,]+(?:\.\d+)?)(\s*%)?",
     re.IGNORECASE,
 )
 _SUB = re.compile(
-    r"\b(?:sell|sells|sold|lose|loses|lost|remove|removes|removed|spend|spends|spent|"
-    r"use|uses|used|give|gives|gave|withdraw|withdraws|withdrew|donate|donates|donated|"
-    r"eat|eats|ate|drop|drops|dropped|minus|discard|discards)\b[^.\d]*([\d,]+(?:\.\d+)?)(\s*%)?",
+    r"\b(?:sell(?:s|ing)?|sold|los(?:e|es|ing)|lost|remov(?:e|es|ing|ed)|spend(?:s|ing)?|spent|"
+    r"us(?:e|es|ing|ed)|giv(?:e|es|ing)|gave|withdraw(?:s|ing)?|withdrew|donat(?:e|es|ing|ed)|"
+    r"eat(?:s|ing)?|ate|drop(?:s|ping|ped)?|discard(?:s|ing|ed)?|minus)"
+    r"\b[^.\d]*?([\d,]+(?:\.\d+)?)(\s*%)?",
     re.IGNORECASE,
 )
-_INC_PCT = re.compile(r"\bincreases?\s+by\s+([\d,]+(?:\.\d+)?)\s*%", re.IGNORECASE)
-_DEC_PCT = re.compile(r"\bdecreases?\s+by\s+([\d,]+(?:\.\d+)?)\s*%", re.IGNORECASE)
+_INC_PCT = re.compile(r"\bincreas(?:e|es|ing|ed)\s+by\s+([\d,]+(?:\.\d+)?)\s*%", re.IGNORECASE)
+_DEC_PCT = re.compile(r"\bdecreas(?:e|es|ing|ed)\s+by\s+([\d,]+(?:\.\d+)?)\s*%", re.IGNORECASE)
 
 
 def _fmt(x: float) -> str:
@@ -70,7 +74,9 @@ def _fmt(x: float) -> str:
 
 def solve_chain(prompt: str) -> Optional[Tuple[float, str]]:
     """Return (value, worked_steps) or None if the structure is not clean."""
-    text = prompt.strip()
+    # Remove thousands-separator commas ("1,000" -> "1000") BEFORE any clause
+    # splitting, so numbers survive the comma-based clause split intact.
+    text = re.sub(r"(?<=\d),(?=\d\d\d(?:\D|$))", "", prompt.strip())
     start_m = _START.search(text)
     if not start_m:
         return None
