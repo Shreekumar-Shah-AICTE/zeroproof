@@ -8,4 +8,5 @@ numpy==2.4.6
 
 # Local inference runtime (GGUF via llama.cpp). Installed from the prebuilt CPU
 # wheel index in the Dockerfile so no compiler toolchain is needed at build time.
-llama-cpp-python==0.3.16
+# Pinned to a version with a verified cp311 linux/amd64 CPU wheel.
+llama-cpp-python==0.3.34

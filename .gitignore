@@ -21,3 +21,6 @@ proving_ground/**/__pycache__/
 /output/
 *.log
 .DS_Store
+
+# test cache
+.pytest_cache/
