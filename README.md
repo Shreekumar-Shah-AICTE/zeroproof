@@ -142,7 +142,8 @@ The Proving Ground reports per-category **generalized** accuracy on paraphrased 
 | [`PROJECT.md`](PROJECT.md) | Living source of truth: decisions, iteration scoreboard, risk register |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System design, contracts, build order |
 | [`docs/QUALITY_ENGINE.md`](docs/QUALITY_ENGINE.md) | The Proving Ground & iteration engine |
-| [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Operator's step-by-step ship-it playbook |
+| [`docs/SUBMISSION_GUIDE.md`](docs/SUBMISSION_GUIDE.md) | **Non-technical, all-browser** step-by-step to submission |
+| [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Operator's step-by-step ship-it playbook (technical) |
 | [`docs/TASKS.md`](docs/TASKS.md) | Ordered build checklist |
 | [`docs/START_HERE.md`](docs/START_HERE.md) | Kickoff for a fresh, context-free agent/IDE |
 | [`deck/ZeroProof_Pitch_Deck.pdf`](deck/) | Judge-facing pitch deck |
