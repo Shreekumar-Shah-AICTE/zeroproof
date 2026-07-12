@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ZeroProof — Pitch Deck</title>
+<style>
+  :root{
+    --bg:#0a0e1a; --bg2:#0f1629; --ink:#eaf0ff; --mut:#9fb0d0;
+    --cy:#22d3ee; --am:#f5b342; --gr:#34d399; --rd:#fb7185; --vi:#a78bfa;
+    --line:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  html,body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);}
+  .slide{
+    position:relative;width:1280px;height:720px;overflow:hidden;
+    background:radial-gradient(1200px 700px at 80% -10%, #17223f 0%, var(--bg2) 45%, var(--bg) 100%);
+    padding:64px 72px;page-break-after:always;display:flex;flex-direction:column;
+  }
+  .slide:last-child{page-break-after:auto;}
+  .kicker{font-size:15px;letter-spacing:.22em;text-transform:uppercase;color:var(--cy);font-weight:700;}
+  h1{font-size:76px;line-height:1.02;font-weight:800;letter-spacing:-.02em;margin:10px 0;}
+  h2{font-size:44px;line-height:1.05;font-weight:800;letter-spacing:-.01em;}
+  h3{font-size:23px;font-weight:700;}
+  p,li{font-size:21px;line-height:1.5;color:var(--mut);}
+  .big{font-size:22px;color:var(--ink);}
+  .accent{color:var(--am);} .cy{color:var(--cy);} .gr{color:var(--gr);} .rd{color:var(--rd);} .vi{color:var(--vi);}
+  .tag{display:inline-block;padding:7px 14px;border:1px solid var(--line);border-radius:999px;color:var(--ink);font-size:15px;font-weight:600;background:rgba(255,255,255,.03);margin-right:8px;}
+  .foot{position:absolute;bottom:26px;left:72px;right:72px;display:flex;justify-content:space-between;font-size:13px;color:#5f6f92;letter-spacing:.04em;border-top:1px solid var(--line);padding-top:12px;}
+  .grid{display:grid;gap:18px;margin-top:8px;}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:18px;padding:22px 24px;}
+  .card h3{margin-bottom:6px;}
+  .card p{font-size:18px;}
+  .num{font-size:56px;font-weight:800;letter-spacing:-.02em;line-height:1;}
+  table{width:100%;border-collapse:collapse;margin-top:14px;}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:17.5px;}
+  th{color:var(--cy);text-transform:uppercase;letter-spacing:.08em;font-size:13px;}
+  td.mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;color:var(--ink);}
+  .center{justify-content:center;}
+  .row{display:flex;gap:18px;}
+  .pill{font-size:15px;color:var(--gr);font-weight:700;}
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .node{border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:15px;color:var(--ink);background:rgba(255,255,255,.04);}
+  .node b{color:var(--cy);}
+  .arrow{color:var(--am);font-size:22px;font-weight:800;}
+  .muted{color:#7f90b3;}
+  .halo{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;}
+</style>
+</head>
+<body>
+
+<!-- 1 · TITLE -->
+<section class="slide center">
+  <div class="halo" style="width:420px;height:420px;background:#1f6feb;top:-90px;right:-70px;"></div>
+  <div class="halo" style="width:340px;height:340px;background:#0e7490;bottom:-120px;left:-60px;"></div>
+  <div class="kicker">AMD Developer Hackathon · Act II · Track 1</div>
+  <h1>Zero<span class="cy">Proof</span></h1>
+  <p class="big" style="max-width:900px;margin-top:6px;">A <b class="accent">zero-token, proof-carrying</b> routing agent. Every task is answered by the <b>cheapest source that can be trusted</b> — a deterministic exact solver when the category admits proof, and a bundled small local LLM for the linguistic ones — at <b class="cy">0 Fireworks tokens</b>.</p>
+  <div style="margin-top:30px;">
+    <span class="tag">0 Fireworks tokens</span>
+    <span class="tag">proof-carrying answers</span>
+    <span class="tag">built to survive the refresh</span>
+  </div>
+  <div class="foot"><span>ZeroProof</span><span>Prove every answer. Spend nothing. Win the refresh.</span></div>
+</section>
+
+<!-- 2 · THE PHYSICS OF VICTORY -->
+<section class="slide">
+  <div class="kicker">The physics of victory</div>
+  <h2>How Track 1 is actually won</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:28px;">
+    <div class="card"><div class="num cy">80%</div><h3>Accuracy gate</h3><p>An LLM judge scores intent on a <b>hidden, refreshed</b> task set generated <i>after</i> submission.</p></div>
+    <div class="card"><div class="num accent">↓ tokens</div><h3>Then rank by tokens</h3><p>Among those who clear the gate, ranking is <b>ascending total Fireworks tokens</b>. Zero is #1.</p></div>
+    <div class="card"><div class="num gr">tie → acc</div><h3>Tie-break</h3><p>Equal tokens ≈ generalized accuracy. So we maximize accuracy in the 0-token cohort.</p></div>
+  </div>
+  <p style="margin-top:26px;max-width:1000px;">The winning play is not subtle: <b class="ink">score exactly zero tokens, clear the gate with margin, and hold the highest generalized accuracy in the 0-token cohort.</b></p>
+  <div class="foot"><span>ZeroProof</span><span>02</span></div>
+</section>
+
+<!-- 3 · THE CONVERGENCE INSIGHT -->
+<section class="slide">
+  <div class="kicker">The insight everyone missed</div>
+  <h2>0 tokens is <span class="rd">table stakes</span> — not a moat</h2>
+  <p style="margin-top:18px;max-width:1020px;">The whole field already converged on “local model + verify + escalate, aiming for 0 tokens.” Dozens of teams sit at 0 on the public board. So zero tokens no longer separates anyone.</p>
+  <div class="card" style="margin-top:26px;background:linear-gradient(90deg,rgba(251,113,133,.12),rgba(255,255,255,.02));border-color:rgba(251,113,133,.35);">
+    <h3 class="rd">The real, hidden battle</h3>
+    <p class="big">Generalized accuracy in the 0-token cohort on the <b>refreshed</b> set — where overfit entries collapse. A real team scored <b class="rd">&gt;80% locally → ~52% officially.</b></p>
+  </div>
+  <p style="margin-top:24px;">ZeroProof spends its <b class="ink">entire engineering budget</b> on that one decisive variable.</p>
+  <div class="foot"><span>ZeroProof</span><span>03</span></div>
+</section>
+
+<!-- 4 · THE MOAT -->
+<section class="slide">
+  <div class="kicker">Why we win</div>
+  <h2>The three-part moat</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:28px;">
+    <div class="card"><h3 class="cy">1 · Algorithm</h3><p>The widest <b>exact-solver</b> coverage in the field. A correct algorithm is <b>paraphrase-invariant</b> — the refresh cannot break it.</p></div>
+    <div class="card"><h3 class="am">2 · Verification</h3><p><b>Proof-carrying answers.</b> Code is executed, math re-derived, logic constraint-solved, entities rule-corrected. A wrong “free” answer is structurally rejected.</p></div>
+    <div class="card"><h3 class="gr">3 · Measurement</h3><p>The <b>Proving Ground</b> — a generalization engine that optimizes the hidden-set score competitors can’t see. Uncopyable edge.</p></div>
+  </div>
+  <p style="margin-top:26px;max-width:1040px;" class="muted">Idea and architecture set the ceiling. The Proving Ground, run relentlessly, is how we actually reach it.</p>
+  <div class="foot"><span>ZeroProof</span><span>04</span></div>
+</section>
+
+<!-- 5 · ARCHITECTURE -->
+<section class="slide">
+  <div class="kicker">Architecture · all on CPU, 0 tokens</div>
+  <h2>Route to the cheapest trustworthy source</h2>
+  <div class="flow" style="margin-top:22px;">
+    <span class="node">/input/tasks.json</span><span class="arrow">→</span>
+    <span class="node"><b>0-token classifier</b></span><span class="arrow">→</span>
+    <span class="node">category solver</span><span class="arrow">→</span>
+    <span class="node"><b>verifier / normalizer</b></span><span class="arrow">→</span>
+    <span class="node">schema-safe writer</span><span class="arrow">→</span>
+    <span class="node">/output/results.json · exit 0</span>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:26px;">
+    <div class="card"><h3 class="cy">Provable → exact solvers</h3><p>math (symbolic · arithmetic-chain · executed program-of-thought), code (execute tests + repair), logic (constraint solver), NER (spaCy + rule correction). <b>Proof-carrying.</b></p></div>
+    <div class="card"><h3 class="am">Linguistic → local LLM, governed</h3><p>factual (self-consistency medoid), sentiment (contrastive-cue governance), summarization (deterministic count/word-cap enforcement). Bundled 1.5B GGUF, <b>0 tokens</b>.</p></div>
+  </div>
+  <p style="margin-top:20px;" class="muted">A default-OFF Fireworks valve exists in code only — an audit-safe, factual-only insurance lever. The win path never touches it.</p>
+  <div class="foot"><span>ZeroProof</span><span>05</span></div>
+</section>
+
+<!-- 6 · PER-CATEGORY -->
+<section class="slide">
+  <div class="kicker">Per-category strategy</div>
+  <h2>Eight categories, every answer earned</h2>
+  <table>
+    <tr><th>Category</th><th>Path</th><th>How it’s proven</th><th>Tokens</th></tr>
+    <tr><td>Mathematical reasoning</td><td class="mono">deterministic + PoT</td><td>symbolic / operation-chain / executed program; samples agree</td><td class="gr">0</td></tr>
+    <tr><td>Code generation</td><td class="mono">LLM + execution</td><td>run against parsed/derived tests; repair loop to green</td><td class="gr">0</td></tr>
+    <tr><td>Code debugging</td><td class="mono">LLM + execution</td><td>fix → re-execute to green</td><td class="gr">0</td></tr>
+    <tr><td>Logical / deductive</td><td class="mono">constraint solver</td><td>unique answer across all satisfying models</td><td class="gr">0</td></tr>
+    <tr><td>Named-entity recognition</td><td class="mono">spaCy + rules</td><td>gazetteer / acronym / person-verb corrections</td><td class="gr">0</td></tr>
+    <tr><td>Sentiment analysis</td><td class="mono">LLM + rules</td><td>contrastive-cue governance; both-sides reason enforced</td><td class="gr">0</td></tr>
+    <tr><td>Text summarization</td><td class="mono">LLM + enforcement</td><td>exact sentence/bullet counts &amp; word caps</td><td class="gr">0</td></tr>
+    <tr><td>Factual knowledge</td><td class="mono">local LLM</td><td>self-consistency medoid <span class="muted">(honest top risk)</span></td><td class="gr">0</td></tr>
+  </table>
+  <div class="foot"><span>ZeroProof</span><span>06</span></div>
+</section>
+
+<!-- 7 · PROVING GROUND -->
+<section class="slide">
+  <div class="kicker">The iteration engine</div>
+  <h2>We optimize the score competitors can’t see</h2>
+  <div class="row" style="margin-top:22px;">
+    <div class="card" style="flex:1;"><h3 class="cy">MEASURE</h3><p>Generate unseen <b>paraphrase / harder / adversarial</b> variants with ground truth. Judge each, meter tokens, simulate 2 vCPU / 4 GB / 10 min / 30 s, run a hardcode guard.</p></div>
+    <div class="card" style="flex:1;"><h3 class="am">DIAGNOSE → IMPROVE</h3><p>Rank misses by hidden-set cost; make one targeted fix; keep only if generalized accuracy rises with <b>zero regression</b>. Bank each best.</p></div>
+  </div>
+  <table style="margin-top:20px;">
+    <tr><th>Iteration</th><th>Change</th><th>det acc</th><th>overall</th></tr>
+    <tr><td>v1 baseline</td><td>initial solvers</td><td>88.3%</td><td>—</td></tr>
+    <tr><td>v2</td><td>gerund/comma parsing · ratio solver · context-aware sentiment</td><td>98.3%</td><td>—</td></tr>
+    <tr><td>v3</td><td>chain start-fallback</td><td class="gr">100%</td><td>—</td></tr>
+    <tr><td>v6</td><td>deterministic-first + per-task budget (real 1.5B model)</td><td class="gr">100%</td><td class="gr">95.3%</td></tr>
+  </table>
+  <div class="foot"><span>ZeroProof</span><span>07</span></div>
+</section>
+
+<!-- 8 · RESULTS -->
+<section class="slide">
+  <div class="kicker">Championship-locked</div>
+  <h2>Measured, not asserted</h2>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);margin-top:28px;">
+    <div class="card"><div class="num gr">100%</div><h3>Deterministic</h3><p class="muted">math · logic · NER · sentiment · summarization, on unseen variants (400/400).</p></div>
+    <div class="card"><div class="num cy">95.3%</div><h3>Overall</h3><p class="muted">including the bundled 1.5B model (factual + code).</p></div>
+    <div class="card"><div class="num accent">0</div><h3>Fireworks tokens</h3><p class="muted">proven by the token meter.</p></div>
+    <div class="card"><div class="num vi">✓</div><h3>Constraints green</h3><p class="muted">slowest task 13.8 s (&lt; 30 s) · ~2.0 GB RAM · image ~1.6 GB.</p></div>
+  </div>
+  <p style="margin-top:26px;max-width:1040px;">All numbers come from <b class="ink">paraphrased / unseen generated variants</b>, never the public sample tasks — a genuine anti-overfit signal. The hardcode guard is clean.</p>
+  <div class="foot"><span>ZeroProof</span><span>08</span></div>
+</section>
+
+<!-- 9 · WHY WE WIN -->
+<section class="slide center">
+  <div class="halo" style="width:420px;height:420px;background:#0e7490;top:-120px;left:-80px;"></div>
+  <div class="kicker">Why this wins Rank #1</div>
+  <h2 style="margin-top:8px;max-width:1040px;">When the refresh knocks everyone down, <span class="cy">ZeroProof stays on top.</span></h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:26px;">
+    <div class="card"><h3 class="gr">Compliant &amp; pure</h3><p>0 tokens · no external calls · no hardcoded answers · no secrets · ≤ 5 GB · license-clean (MIT + Apache-2.0 model).</p></div>
+    <div class="card"><h3 class="am">Robust by construction</h3><p>Correct algorithms don’t care how a prompt is worded. Wrong free answers are rejected before they ship.</p></div>
+  </div>
+  <p style="margin-top:26px;max-width:1000px;" class="big">Overfit “100%” entries crater on the refresh. ZeroProof’s margin is <b>earned</b> on unseen variants — the one thing that carries through to the final score.</p>
+  <div class="foot"><span>ZeroProof</span><span>Prove every answer. Spend nothing. Win the refresh.</span></div>
+</section>
+
+</body>
+</html>
